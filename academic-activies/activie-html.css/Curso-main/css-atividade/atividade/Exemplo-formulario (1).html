@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Exemplo Formulário HTML 5</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <form>
+           <fieldset>
+                <legend>Conta de usuário</legend>
+                <label>Email</label>
+                <input type="email"  name="email" >
+                <br>
+                <label>Senha *</label>
+                <input type="password" name="senha"  >
+           </fieldset>
+ 
+ 
+            <fieldset>
+                <legend>Dados Pessoais</legend>
+                <label>Nome: *</label>
+                <input type="text" width="150" name="nome" placeholder="Informe o nome" width="40" maxlength="40"  required/>
+                <br>
+
+                <label>Telefone:*</label>
+                <input type="text" name="nome" placeholder="(99)9999-9999" required/>
+                <br>
+
+                <label>Sexo:</label>
+                <label>Masculino</label>
+                <input type="radio" name="sexo" value="masculino" checked/>
+                <label>Feminino</label>
+                <input type="radio" name="sexo" value="feminino" />
+                <br>
+
+                <label>Dt nascimento</label>
+                <input type="date" name="dtnascimento" />
+                <br>
+                <label>Idade</label>
+
+                <input type="number" name="idade" min=0 max=100 placeholder="Informe a sua idade"/>
+
+            </fieldset>
+
+            <fieldset>
+                <legend>Endereço</legend>
+                <label>Rua</label>
+                <input type="text" name="rua" placeholder="logradouro" />
+                <label>Número</label>
+                <input type="number" name="numero"  min=1  placeholder="Número casa, apto" />
+                <br>
+                <label>Complemento</label>
+                <input type="text" name="complemento" placeholder="Apto, casa" />
+                <br>
+                <label>Cidade</label>
+                <input type="text" name="cidade" placeholder="Informe a sua cidade"/>
+                <br>
+                <label>Estado</label>
+
+                <select name="estado">
+                    <option value="Santa Catarina">Santa Catarina</option>
+                    <option value="PR">Paraná</option>
+                    <option value="RS">Rio Grande do Sul</option>
+                    <option value="SP">São Paulo</option>
+                    <option value="RJ">Rio de Janeiro</option>
+                </select>
+                <fieldset>
+                   
+                    <legend>Observações</legend>
+                    <legend id="legenda">Fale mais sobre voce</legend>
+                    <textarea placeholder="Coloque de forma resumida o seu hobby" cols="60" rows="5">
+                    </textarea>
+
+                </fieldset>
+                <input type="submit" value="Salvar" id="botao">
+                
+            </fieldset>
+
+        </form>
+
+      
+    </body>
+
+</html>

@@ -1,0 +1,27 @@
+h1{
+    text-align: center;
+}
+
+p{
+    text-align: center;
+}
+
+.espaço{
+    margin-left: 75px;
+    margin-right: 75px;
+}
+
+.desc{
+    margin-left: -250px;
+}
+
+.custo{
+    margin-left: -270px;
+}
+
+.txt{
+    text-align: justify;
+    padding-left: 630px;
+}
+
+

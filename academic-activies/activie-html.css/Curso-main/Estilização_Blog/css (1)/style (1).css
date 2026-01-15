@@ -1,0 +1,56 @@
+body{
+    background-color: aliceblue;
+}
+
+.box{
+    width: 940px;
+    height: 260px;
+    margin-left: 15px;
+    margin-top: -20px;
+    border-bottom: 1px dashed aquamarine;
+}
+
+fieldset{
+    background-color: rgb(75, 63, 128);
+    height: 785px;
+    width: 400px;
+    margin-left: 400px;
+    border-radius: 20px;
+    border: 0px;
+}
+
+.titulos{
+    margin-left: 300px;
+    margin-right: 260px;
+    background-color: rgb(255, 248, 232);
+    border-radius: 10px;
+}
+
+
+article{
+    background-color: rgb(75, 63, 128);
+    height: 785px;
+    width: 960px;
+    margin-left: 300px;
+    border-radius: 20px;
+    border: 0px;
+}
+
+article h2{
+    color: white;      
+}
+
+article h4{
+    color: white;
+}
+
+article p{
+    margin-left: 310px;
+    margin-top: -150px;
+    color: aquamarine;
+}
+
+#img3{
+    height: 170px;
+    width: 300px;
+}

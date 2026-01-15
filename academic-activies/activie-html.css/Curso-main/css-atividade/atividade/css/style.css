@@ -1,0 +1,50 @@
+body{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    background-color: rgb(233, 217, 217);
+}
+
+legend{
+    color: blue;
+    font-weight: bold;
+}
+
+fieldset{
+    margin: 1em 0;
+    border-radius: 5px;
+    background-color: rgb(212, 245, 243);
+    border: 2px solid;
+}
+
+input{
+    border-radius: 5px;
+}
+
+label{
+    display: block;
+    cursor: pointer;
+    margin: 2px;
+}
+
+#legenda{
+    color: black;   
+}
+
+textarea{
+    resize: none;
+    border-radius: 5px;
+    width: 400px;
+}
+
+#botao{
+    background-color: aqua;
+    width: 70px ;
+    height: 50px;
+    cursor: pointer;
+}
+
+#botao:hover{
+    background-color: rgb(241, 245, 22);
+    color: black;
+    width: 72px;
+    height: 52px;    
+}

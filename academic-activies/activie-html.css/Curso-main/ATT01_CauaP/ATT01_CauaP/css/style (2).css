@@ -1,0 +1,29 @@
+
+h1{
+    text-align: center;
+}
+
+#container{
+    padding: 1px;
+    display: flex;
+}
+
+
+
+.box{
+    width: 48%;
+    padding-left: 25px;
+    background-color: antiquewhite;
+    border-radius: 10px;   
+}
+
+.box img{
+    max-width: 150%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.box p{
+    font-size: 15px;
+}
+

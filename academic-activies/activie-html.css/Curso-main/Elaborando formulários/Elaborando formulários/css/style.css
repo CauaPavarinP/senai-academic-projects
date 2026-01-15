@@ -1,0 +1,59 @@
+body{
+    background-color: aqua;
+
+}
+
+fieldset{
+    margin: 70px;
+    padding: 80px;
+    border-radius: 10px;
+    background-color: aliceblue ;
+    margin-left: 600px;
+    margin-top: 150px;
+}
+
+label{
+    font-weight: normal;
+}
+
+label{
+    margin: 30px;
+    margin-left: 10px;
+
+}
+
+input{
+    margin: 5px;
+    margin-left: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: aliceblue;
+}
+
+form{
+    width: 500px;
+}
+
+a{
+  margin-left: 35px;
+}
+
+#botao{
+    background-color: aqua;
+    padding: 10px;
+    border-radius: 10px;
+    margin-left: 70px;
+}
+
+#botao:hover{
+    padding: 11px;
+    background-color: aquamarine;
+}
+
+#botao1{
+    background-color: aqua;
+    padding: 10px;
+    border-radius: 10px;
+    margin-left: 58px;
+}
+
