@@ -1,0 +1,437 @@
+[
+    {
+        "id": "f5b3717c1048152b",
+        "type": "tab",
+        "label": "Orquestrador IoT - Prototipagem",
+        "disabled": false,
+        "info": "Sistema de monitoramento de ocupação e condições ambientais para área de prototipagem"
+    },
+    {
+        "id": "1302c0271b253634",
+        "type": "mqtt in",
+        "z": "f5b3717c1048152b",
+        "name": "Recebe Evento NCA",
+        "topic": "empresa01/area_prototipagem/fluxo/evento",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "5eed18c5c7150070",
+        "nl": false,
+        "rap": false,
+        "rh": 0,
+        "inputs": 0,
+        "x": 350,
+        "y": 180,
+        "wires": [
+            [
+                "ba7a8a2bd19b76bb"
+            ]
+        ]
+    },
+    {
+        "id": "8c7ee8e4ed57f19a",
+        "type": "mqtt in",
+        "z": "f5b3717c1048152b",
+        "name": "Status NCA (LWT)",
+        "topic": "empresa01/area_prototipagem/status/nca",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "5eed18c5c7150070",
+        "nl": false,
+        "rap": false,
+        "rh": 0,
+        "inputs": 0,
+        "x": 370,
+        "y": 380,
+        "wires": [
+            [
+                "ec294eac48ffc3e3"
+            ]
+        ]
+    },
+    {
+        "id": "fb966c6760454088",
+        "type": "mqtt in",
+        "z": "f5b3717c1048152b",
+        "name": "Status UMAF (LWT)",
+        "topic": "empresa01/area_prototipagem/status/umaf",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "5eed18c5c7150070",
+        "nl": false,
+        "rap": false,
+        "rh": 0,
+        "inputs": 0,
+        "x": 370,
+        "y": 440,
+        "wires": [
+            [
+                "53e393fc2c0a5279"
+            ]
+        ]
+    },
+    {
+        "id": "c02bc545d0a3b853",
+        "type": "mqtt in",
+        "z": "f5b3717c1048152b",
+        "name": "Recebe Dados Ambiente",
+        "topic": "empresa01/area_prototipagem/ambiente/dado",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "5eed18c5c7150070",
+        "nl": false,
+        "rap": false,
+        "rh": 0,
+        "inputs": 0,
+        "x": 370,
+        "y": 500,
+        "wires": [
+            [
+                "ec80868535305ef2",
+                "f669ac9784130627",
+                "e90b7d984683a22c"
+            ]
+        ]
+    },
+    {
+        "id": "ba7a8a2bd19b76bb",
+        "type": "function",
+        "z": "f5b3717c1048152b",
+        "name": "Processa Ocupação + Regras",
+        "func": "// Recupera valores do contexto de fluxo\nconst payload = msg.payload;\nlet ocupacao = flow.get(\"ocupacao\") || 0;\nconst limite = flow.get(\"limite\") || 5;\n\n// Processa evento de entrada/saída\nif (payload.evento === \"entrada\") {\n    ocupacao++;\n} else if (payload.evento === \"saida\") {\n    ocupacao--;\n}\n\n// Garante que ocupação não seja negativa\nif (ocupacao < 0) {\n    ocupacao = 0;\n}\n\n// Atualiza ocupação no contexto\nflow.set(\"ocupacao\", ocupacao);\n\n// Define status baseado na ocupação\nlet status = \"Livre\";\nlet cor = \"verde\";\n\nif (ocupacao >= limite) {\n    status = \"Alerta\";\n    cor = \"vermelho\";\n} else if (ocupacao >= limite * 0.7) {\n    status = \"Atenção\";\n    cor = \"amarelo\";\n}\n\n// Cria objeto de saída consolidado\nconst estadoConsolidado = {\n    ocupacao: ocupacao,\n    limite_op: limite,\n    status_area: status,\n    sinalizacao: cor,\n    timestamp: Date.now()\n};\n\n// Armazena último estado\nflow.set(\"ultimo_estado\", estadoConsolidado);\n\n// Prepara mensagens de saída\nconst msg1 = {\n    payload: estadoConsolidado,\n    topic: \"empresa01/area_prototipagem/estado/consolidado\"\n};\n\nconst msg2 = {\n    payload: estadoConsolidado\n};\n\nreturn [msg1, msg2];",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 180,
+        "wires": [
+            [
+                "47ced7b822711925"
+            ],
+            [
+                "c3d67bb36e42c5a2",
+                "37013c0cd448581f",
+                "10a4814060b9d2af"
+            ]
+        ]
+    },
+    {
+        "id": "27be55dbb2f67cef",
+        "type": "function",
+        "z": "f5b3717c1048152b",
+        "name": "Atualiza Limite",
+        "func": "// Atualiza o limite no contexto de fluxo\nflow.set(\"limite\", msg.payload);\n\n// Prepara mensagem para publicação\nconst novaMsg = {\n    topic: \"empresa01/area_prototipagem/config/limite\",\n    payload: {\n        limite: msg.payload,\n        timestamp: Date.now()\n    }\n};\n\nreturn novaMsg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 320,
+        "wires": [
+            [
+                "de43bc4755f28b8c"
+            ]
+        ]
+    },
+    {
+        "id": "10a4814060b9d2af",
+        "type": "function",
+        "z": "f5b3717c1048152b",
+        "name": "Formata Ocupação Texto",
+        "func": "// Formata texto de ocupação para exibição\nconst estado = msg.payload;\nmsg.payload = `${estado.ocupacao}/${estado.limite_op}`;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 260,
+        "wires": [
+            [
+                "0c18814ec439a218"
+            ]
+        ]
+    },
+    {
+        "id": "47ced7b822711925",
+        "type": "mqtt out",
+        "z": "f5b3717c1048152b",
+        "name": "Envia Estado Consolidado",
+        "topic": "empresa01/area_prototipagem/estado/consolidado",
+        "qos": "1",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "5eed18c5c7150070",
+        "x": 990,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "de43bc4755f28b8c",
+        "type": "mqtt out",
+        "z": "f5b3717c1048152b",
+        "name": "Publica Limite",
+        "topic": "empresa01/area_prototipagem/config/limite",
+        "qos": "1",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "5eed18c5c7150070",
+        "x": 930,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "c3d67bb36e42c5a2",
+        "type": "ui_text",
+        "z": "f5b3717c1048152b",
+        "group": "38ffaa54.f19a26",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "Status da Área",
+        "label": "Status da Área",
+        "format": "<div style='font-size: 24px; font-weight: bold; color: {{msg.payload.status_area === \"Alerta\" ? \"#ff4444\" : msg.payload.status_area === \"Atenção\" ? \"#ffaa00\" : \"#44ff44\"}}; text-align: center; padding: 12px; border-radius: 8px; background-color: #f8f8f8;'>{{msg.payload.status_area}}</div>",
+        "layout": "row-spread",
+        "x": 950,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "37013c0cd448581f",
+        "type": "ui_gauge",
+        "z": "f5b3717c1048152b",
+        "name": "Gauge Ocupação",
+        "group": "38ffaa54.f19a26",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Ocupação da Sala",
+        "label": "pessoas",
+        "format": "{{msg.payload.ocupacao}}",
+        "min": 0,
+        "max": "15",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "7",
+        "seg2": "10",
+        "x": 950,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "0c18814ec439a218",
+        "type": "ui_text",
+        "z": "f5b3717c1048152b",
+        "group": "38ffaa54.f19a26",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "Texto Ocupação",
+        "label": "Ocupação Atual",
+        "format": "<div style='font-size: 26px; font-weight: bold; text-align: center; color: #3366cc; padding: 8px;'>{{msg.payload}}</div>",
+        "layout": "row-spread",
+        "x": 950,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "3dac778f05c2fee9",
+        "type": "ui_slider",
+        "z": "f5b3717c1048152b",
+        "name": "Slider Limite",
+        "label": "Limite Máximo de Ocupação",
+        "tooltip": "",
+        "group": "38ffaa54.f19a26",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "all",
+        "topic": "limite",
+        "topicType": "str",
+        "min": "1",
+        "max": "15",
+        "step": 1,
+        "x": 370,
+        "y": 320,
+        "wires": [
+            [
+                "27be55dbb2f67cef"
+            ]
+        ]
+    },
+    {
+        "id": "ec294eac48ffc3e3",
+        "type": "ui_text",
+        "z": "f5b3717c1048152b",
+        "group": "38ffaa54.f19a26",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "name": "Estado NCA",
+        "label": "Status do Sensor de Entrada/Saída (NCA)",
+        "format": "<div style='font-size: 20px; color: {{msg.payload === \"online\" ? \"#00aa00\" : \"#cc0000\"}}; font-weight: bold; text-align: center; padding: 8px;'>{{msg.payload === \"online\" ? \"✅ ONLINE\" : \"❌ OFFLINE\"}}</div>",
+        "layout": "row-spread",
+        "x": 950,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "53e393fc2c0a5279",
+        "type": "ui_text",
+        "z": "f5b3717c1048152b",
+        "group": "38ffaa54.f19a26",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "Estado UMAF",
+        "label": "Status do Sensor Ambiental (UMAF)",
+        "format": "<div style='font-size: 20px; color: {{msg.payload === \"online\" ? \"#00aa00\" : \"#cc0000\"}}; font-weight: bold; text-align: center; padding: 8px;'>{{msg.payload === \"online\" ? \"✅ ONLINE\" : \"❌ OFFLINE\"}}</div>",
+        "layout": "row-spread",
+        "x": 950,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "ec80868535305ef2",
+        "type": "ui_gauge",
+        "z": "f5b3717c1048152b",
+        "name": "Gauge Temperatura",
+        "group": "38ffaa54.f19a26",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Temperatura",
+        "label": "°C",
+        "format": "{{msg.payload.temperatura}}",
+        "min": 0,
+        "max": "50",
+        "colors": [
+            "#00b4d8",
+            "#0077b6",
+            "#03045e"
+        ],
+        "seg1": "20",
+        "seg2": "30",
+        "x": 950,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "f669ac9784130627",
+        "type": "ui_gauge",
+        "z": "f5b3717c1048152b",
+        "name": "Gauge Umidade",
+        "group": "38ffaa54.f19a26",
+        "order": 8,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Umidade",
+        "label": "%",
+        "format": "{{msg.payload.umidade}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#caffbf",
+            "#9bf6ff",
+            "#0077b6"
+        ],
+        "seg1": "40",
+        "seg2": "70",
+        "x": 950,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "e90b7d984683a22c",
+        "type": "ui_text",
+        "z": "f5b3717c1048152b",
+        "group": "38ffaa54.f19a26",
+        "order": 9,
+        "width": 0,
+        "height": 0,
+        "name": "Texto Ambiente",
+        "label": "Condições Ambientais",
+        "format": "<div style='font-size: 20px; text-align: center; padding: 10px; background-color: #f0f8ff; border-radius: 6px;'>🌡 Temperatura: <strong>{{msg.payload.temperatura || 0}}°C</strong> | 💧 Umidade: <strong>{{msg.payload.umidade || 0}}%</strong></div>",
+        "layout": "row-spread",
+        "x": 950,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "5eed18c5c7150070",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "21862f7b718544f49677b82f78c2215d.s1.eu.hivemq.cloud",
+        "port": 8883,
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "38ffaa54.f19a26",
+        "type": "ui_group",
+        "name": "Monitoramento",
+        "tab": "c1d0ecb0.42ee8",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "c1d0ecb0.42ee8",
+        "type": "ui_tab",
+        "name": "Prototipagem",
+        "icon": "dashboard",
+        "order": 1
+    },
+    {
+        "id": "1881603880ba0c06",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "2.28.2"
+        }
+    }
+]
